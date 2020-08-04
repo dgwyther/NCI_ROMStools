@@ -1,0 +1,41 @@
+#!/bin/bash
+#PBS -P gh9
+#PBS -q normal
+#PBS -l mem=128gb,walltime=24:00:00,ncpus=1
+#PBS -l wd
+#PBS -N cdo_vbar
+#PBS -M david.gwyther@gmail.com
+#PBS -l storage=gdata/gh8+gdata/gh9
+cd /g/data/gh9/deg581/ana/tisom016
+
+module load cdo
+
+model_dir=$'/g/data/gh8/deg581/tisom016/'
+hisname=$'tisom_his_'
+year_start=$'011'
+year_end=$'036'
+outname=$'tisom016'
+
+# section 1
+varname=$'temp'
+
+eval in_name=$"${model_dir}${hisname}0{${year_start}..${year_end}}"
+
+eval cdo -v -select,name=${varname} ${in_name}.nc  ${outname}_${varname}_${year_start}-${year_end}.nc
+
+cdo -v monmean ${outname}_${varname}_${year_start}-${year_end}.nc ${outname}_${varname}_${year_start}-${year_end}_monmean.nc
+cdo ymonavg ${outname}_${varname}_${year_start}-${year_end}_monmean.nc ${outname}_${varname}_${year_start}-${year_end}_monmean_clima.nc
+cdo ymonsub ${outname}_${varname}_${year_start}-${year_end}_monmean.nc -ymonavg ${outname}_${varname}_${year_start}-${year_end}_monmean.nc ${outname}_${varname}_${year_start}-${year_end}_monmean_anom.nc
+
+# section 2
+varname=$'salt'
+
+eval in_name=$"${model_dir}${hisname}0{${year_start}..${year_end}}"
+
+eval cdo -v -select,name=${varname} ${in_name}.nc  ${outname}_${varname}_${year_start}-${year_end}.nc
+
+cdo -v monmean ${outname}_${varname}_${year_start}-${year_end}.nc ${outname}_${varname}_${year_start}-${year_end}_monmean.nc
+cdo ymonavg ${outname}_${varname}_${year_start}-${year_end}_monmean.nc ${outname}_${varname}_${year_start}-${year_end}_monmean_clima.nc
+cdo ymonsub ${outname}_${varname}_${year_start}-${year_end}_monmean.nc -ymonavg ${outname}_${varname}_${year_start}-${year_end}_monmean.nc ${outname}_${varname}_${year_start}-${year_end}_monmean_anom.nc
+
+exit

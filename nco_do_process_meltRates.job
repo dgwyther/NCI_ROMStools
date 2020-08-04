@@ -1,0 +1,41 @@
+#!/bin/bash
+#PBS -P gh9
+#PBS -q normal
+#PBS -l mem=128gb,walltime=24:00:00,ncpus=1
+#PBS -l wd
+#PBS -m bae
+#PBS -N nco_cdo_meltRates
+#PBS -M david.gwyther@gmail.com
+#PBS -l storage=gdata/gh8+gdata/gh9
+
+cd /g/data/gh9/deg581/ana/tisom016
+logname=$(date +%Y%m%d%H%M%S)
+
+module load nco
+model_name='tisom016'
+his_dir='/g/data/gh8/deg581/tisom016/'
+ana_dir='/g/data/gh9/deg581/ana/tisom016/'
+mod_dir='/g/data/gh8/deg581/tisom016/'
+year_start='0011' #must have 4 digits e.g. 0002, 0076, 0183
+year_end='0036'
+year_span=$((10#${year_end}-10#${year_start}+1))
+
+ncrcat -O -p ${his_dir} -n ${year_span},2,1 tisom_his_${year_start}.nc ${model_name}_m_yr${year_start}-${year_end}.nc -D 2 -v m
+ncks -C -v pm -A ${mod_dir}tisom008_canal_grd.nc ${model_name}_m_yr${year_start}-${year_end}.nc
+ncks -C -v pn -A ${mod_dir}tisom008_canal_grd.nc ${model_name}_m_yr${year_start}-${year_end}.nc
+ncks -C -v mask_totten -A ${ana_dir}mask_totten.nc ${model_name}_m_yr${year_start}-${year_end}.nc 
+ncap2 -h -O -s "weights=mask_totten/pm/pn" ${model_name}_m_yr${year_start}-${year_end}.nc ${model_name}_m_yr${year_start}-${year_end}.nc
+ncwa -O -h -w weights -v m -a eta_rho,xi_rho ${model_name}_m_yr${year_start}-${year_end}.nc ${model_name}_m.masked_yr${year_start}-${year_end}.nc
+ncap2 -O -s "my=m*60*60*24*365.25" ${model_name}_m.masked_yr${year_start}-${year_end}.nc ${model_name}_m.masked_yr${year_start}-${year_end}.nc
+
+
+module load cdo/1.9.8
+
+eval name=$"${model_name}_m_yr${year_start}-${year_end}"
+
+cdo monmean ${name}.nc ${name}_monmean.nc
+cdo ymonavg ${name}_monmean.nc ${name}_monmean_clima.nc
+cdo ydayavg ${name}.nc ${name}_clima.nc
+cdo ymonsub ${name}_monmean.nc -ymonavg ${name}_monmean.nc ${name}_monmean_anom.nc
+
+exit

@@ -1,0 +1,36 @@
+#!/bin/bash
+#PBS -P nk1
+#PBS -q express
+#PBS -l mem=128gb,walltime=2:00:00,ncpus=1
+#PBS -l wd
+#PBS -m bae
+#PBS -N cdo_dye01
+cd /short/m68/deg581/ana/tisom015_sgfw
+
+module load cdo
+
+model_name='tisom015_sgfw_NewIniNoRvr_CombinedShtChn'
+his_dir=$'/g/data/gh8/deg581/tisom015_sgfw/CombinedShtChn/' #$'/g/data/gh8/deg581/tisom011/'
+mod_dir='/short/m68/deg581/tisom015_sgfw/'
+ana_dir='/short/m68/deg581/ana/tisom015_sgfw/'
+
+hisname=$'tisom_his_'
+varname=$'dye_01'
+year_start=$'016'
+year_end=$'020'
+
+
+
+eval in_name=$"${his_dir}${hisname}0{${year_start}..${year_end}}"
+
+#cdo cat ${model_dir}${hisname}*.nc outfile.nc   ##cat all variables
+#cdo -v -select,name=${varname} ${model_dir}${hisname}0[0-2]*.nc  tisom_his_${varname}.nc
+eval cdo -v -select,name=${varname} ${in_name}.nc  ${model_name}_${varname}_${year_start}-${year_end}.nc
+
+cdo -v monmean ${model_name}_${varname}_${year_start}-${year_end}.nc ${model_name}_${varname}_${year_start}-${year_end}_monmean.nc
+cdo ymonavg ${model_name}_${varname}_${year_start}-${year_end}_monmean.nc ${model_name}_${varname}_${year_start}-${year_end}_monmean_clima.nc
+cdo sub ${model_name}_${varname}_${year_start}-${year_end}_monmean.nc ${model_name}_${varname}_${year_start}-${year_end}_monmean_clima.nc ${model_name}_${varname}_${year_start}-${year_end}_monmean_anom.nc
+cdo -v ydaymean ${model_name}_${varname}_${year_start}-${year_end}.nc ${model_name}_${varname}_${year_start}-${year_end}_daymean_clima.nc
+
+
+exit

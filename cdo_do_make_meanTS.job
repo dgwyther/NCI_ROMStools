@@ -1,0 +1,36 @@
+#!/bin/bash
+#PBS -P gh9
+#PBS -q express
+#PBS -l mem=128gb,walltime=10:00:00,ncpus=1
+#PBS -l wd
+#PBS -m bae
+#PBS -N nco_maketopTS
+cd /short/m68/deg581/ana/tisom011
+
+module load cdo
+module load nco
+
+# set input file
+orig_file=$'tisom_his_temp_monmean'
+in_file=${orig_file}.top
+
+# extract top level data
+ncks -d s_rho,-1 ${orig_file}.nc ${in_file}.nc
+
+# set up mask
+#cdo setvals,0,NaN mask_totten.nc mask_totten_nan.nc 
+
+# mask out non-ice shelf data
+#cdo mul ${in_file}.nc mask_totten_nan.nc ${in_file}.masked.nc #multiply
+#cdo setmissval,NaN ${in_file}.masked.nc ${in_file}.masked.nc
+
+# compute mean including weights
+ncks -C -v pm -A tisom008_canal_grd.nc ${in_file}.nc 
+ncks -C -v pn -A tisom008_canal_grd.nc ${in_file}.nc
+ncks -C -v mask_totten -A mask_totten.nc ${in_file}.nc
+ncap2 -h -O -s "weights=mask_totten/pm/pn" ${in_file}.nc ${in_file}.nc
+
+#cdo fldmean,weights=TRUE ${in_file}.masked.nc ${in_file}.masked.mean.nc
+ncwa -O -h -w weights -v temp -a eta_rho,xi_rho ${in_file}.nc ${in_file}.mean.nc
+
+exit
