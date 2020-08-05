@@ -1,23 +1,23 @@
 #!/bin/bash
-#PBS -P gh9
+#PBS -P gi0
 #PBS -q normal
 #PBS -l mem=128gb,walltime=24:00:00,ncpus=1
 #PBS -l wd
 #PBS -m bae
 #PBS -N nco_cdo_meltRates
 #PBS -M david.gwyther@gmail.com
-#PBS -l storage=gdata/gh8+gdata/gh9
+#PBS -l storage=gdata/gh8+gdata/gh9+scratch/m68
 
-cd /g/data/gh9/deg581/ana/tisom016
+cd /g/data/gh9/deg581/ana/tisom017_sgfw
 logname=$(date +%Y%m%d%H%M%S)
 
 module load nco
-model_name='tisom016'
-his_dir='/g/data/gh8/deg581/tisom016/'
-ana_dir='/g/data/gh9/deg581/ana/tisom016/'
-mod_dir='/g/data/gh8/deg581/tisom016/'
-year_start='0011' #must have 4 digits e.g. 0002, 0076, 0183
-year_end='0036'
+model_name='tisom017_sgfw'
+his_dir='/scratch/m68/deg581/tisom017_sgfw/'
+ana_dir='/g/data/gh9/deg581/ana/tisom017_sgfw/'
+mod_dir='/scratch/m68/deg581/tisom017_sgfw/'
+year_start='0001' #must have 4 digits e.g. 0002, 0076, 0183
+year_end='0015'
 year_span=$((10#${year_end}-10#${year_start}+1))
 
 ncrcat -O -p ${his_dir} -n ${year_span},2,1 tisom_his_${year_start}.nc ${model_name}_m_yr${year_start}-${year_end}.nc -D 2 -v m

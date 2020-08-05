@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -P gi0
+#PBS -q normal
+#PBS -l mem=1gb,walltime=48:00:00,ncpus=1
+#PBS -m bae
+#PBS -N rsynctogdata
+#PBS -l storage=gdata/gh8+gdata/gh9+scratch/m68
+
+modDir='/scratch/m68/deg581/tisom017_sgfw/'
+storageDir='/g/data/gh9/deg581/ana/tisom017_sgfw/'
+oldProjName='gi0'
+newProjName='gh8'
+
+cd ${modDir}
+
+logname=$(date +%Y%m%d%H%M%S)
+rsync -avz ${modDir}/tisom_his_01[8-9]*.nc ${storageDir}
+rsync -avz ${modDir}/tisom_his_02*.nc ${storageDir}
+
+find ${storageDir}/tisom_his_*.nc -user deg581 -group ${oldProjName} -exec chgrp -ch ${newProjName} {} \;
+
+exit

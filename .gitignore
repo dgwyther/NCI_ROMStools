@@ -1,0 +1,8 @@
+# history and output files
+*.nc
+*.tmp
+# logs
+*.e[0-9]*
+*.o[0-9]*
+*.log*
+
