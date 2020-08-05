@@ -7,15 +7,17 @@
 #PBS -l storage=gdata/gh8+gdata/gh9+scratch/m68
 
 modDir='/scratch/m68/deg581/tisom017_sgfw/'
-storageDir='/g/data/gh9/deg581/ana/tisom017_sgfw/'
-oldProjName='gi0'
-newProjName='gh8'
+storageDir='/g/data/gh9/deg581/tisom017_sgfw/'
+oldProjName='m68'
+newProjName='gi0'
 
 cd ${modDir}
 
 logname=$(date +%Y%m%d%H%M%S)
-rsync -avz ${modDir}/tisom_his_01[8-9]*.nc ${storageDir}
-rsync -avz ${modDir}/tisom_his_02*.nc ${storageDir}
+
+for q in {0001..15}; 
+do rsync -avz ${modDir}/tisom_his_$q.nc ${storageDir} --log-file=rsync.log${logname}; 
+done
 
 find ${storageDir}/tisom_his_*.nc -user deg581 -group ${oldProjName} -exec chgrp -ch ${newProjName} {} \;
 

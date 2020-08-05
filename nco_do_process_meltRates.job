@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -P gi0
 #PBS -q normal
-#PBS -l mem=128gb,walltime=24:00:00,ncpus=1
+#PBS -l mem=128gb,walltime=01:00:00,ncpus=1
 #PBS -l wd
 #PBS -m bae
 #PBS -N nco_cdo_meltRates

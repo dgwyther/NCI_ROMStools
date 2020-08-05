@@ -5,15 +5,16 @@
 #PBS -l wd
 #PBS -N cdo_vbar
 #PBS -M david.gwyther@gmail.com
-#PBS -l storage=gdata/gh8+gdata/gh9
+#PBS -l storage=gdata/gh8+gdata/gh9+scratch/m68
+
 cd /g/data/gh9/deg581/ana/tisom016
 
 module load cdo
 
-model_dir=$'/g/data/gh8/deg581/tisom016/'
+model_dir=$'/g/data/gh9/deg581/tisom017_sgfw/'
 hisname=$'tisom_his_'
-year_start=$'011'
-year_end=$'036'
+year_start=$'001'
+year_end=$'015'
 outname=$'tisom016'
 
 # section 1
